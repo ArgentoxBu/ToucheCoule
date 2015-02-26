@@ -3,6 +3,9 @@ import java.lang.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+
+import IA.MoteurInference;
+
 import java.net.URL;
 
 // ****************************************************************	
@@ -539,7 +542,7 @@ class FenetreJeu extends JFrame implements ActionListener {
 	private void IA_jouer_un_coup() {
 
 		if (!terminer) {
-
+			
 			boolean ok = false;
 
 			char ConnaissanceAgent[][];
@@ -547,13 +550,20 @@ class FenetreJeu extends JFrame implements ActionListener {
 
 			// ************** Section à modifier commence ici *************
 
-			while (!ok) {
-
-				int pos_x = getRandomNum(0, 9);
-				int pos_y = getRandomNum(0, 9);
-
-				ok = jouer(pos_x, pos_y);
-			}
+//			while (!ok) {
+//
+//				int pos_x = getRandomNum(0, 9);
+//				int pos_y = getRandomNum(0, 9);
+//
+//				ok = jouer(pos_x, pos_y);
+//			}
+			
+			int[] coup;
+			coup = MoteurInference.getInstance().calculCoup(ConnaissanceAgent);
+			
+			jouer(coup[0],coup[1]);
+			
+			
 
 			// ************** Section à modifier termine ici *************
 

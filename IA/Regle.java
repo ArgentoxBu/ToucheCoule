@@ -4,20 +4,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Regle {
+	
+//	main de test
+	
+//	public static void main(String[] args) {
+//		Regle regle = new Regle("mode(Destruction),coupReussi,!bateau(coule)"
+//				+ "=>continuerDirection");
+//		System.out.println(regle);
+//		System.out.println(regle.satisfaitCondition("coupReussi"));		// true
+//		System.out.println(regle.satisfaitConditions(
+//				"mode(Destruction)","coupReussi"));						// false
+//		System.out.println(regle.satisfaitConditions(
+//				"mode(Destruction)","coupReussi","!bateau(coule)"));	// true
+//	}
+	
+	/************************Attributs*************************/
 	private ArrayList<String> premisses;
 	private ArrayList<String> actions;
 	
-	public static void main(String[] args) {
-		Regle regle = new Regle("mode(Destruction),coupReussi,!bateau(coule)"
-				+ "=>continuerDirection");
-		System.out.println(regle);
-		System.out.println(regle.satisfaitCondition("coupReussi"));		// true
-		System.out.println(regle.satisfaitConditions(
-				"mode(Destruction)","coupReussi"));						// false
-		System.out.println(regle.satisfaitConditions(
-				"mode(Destruction)","coupReussi","!bateau(coule)"));	// true
-	}
-	
+	/**********************Constructeur************************/
 	public Regle(String data) {		
 		String[] regleDecomposee = data.split("=>");
 		premisses = new ArrayList<String>(Arrays.asList(
@@ -26,6 +31,7 @@ public class Regle {
 				regleDecomposee[1].split(",")));
 	}
 	
+	/************************Methodes**************************/
 	/**
 	 * Permet de savoir si un fait correspond à un prémisse d’une règle
 	 * @param fait
