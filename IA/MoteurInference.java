@@ -5,11 +5,14 @@ import java.util.*;
 
 public class MoteurInference {
 	//Main de test
-	/* 
+
 	public static void main(String[] args) {
-		MoteurInference test = new MoteurInference();
-		System.out.println(test.estSolution("premierCoup"));
-	}*/
+        int[][] SecteurRecherche = new int[2][2];
+        int[] a = new int[2];
+        a[0] = 1;
+        a[1] = 5;
+		System.out.println();
+	}
 	
 	/************************Attributs*************************/
 	private static MoteurInference instance;
@@ -19,6 +22,7 @@ public class MoteurInference {
 	private int[] dernierCoup = new int[2];
 	private int[] avantDernierCoup = new int[2];
 	private String consequence;
+    private int[][] SecteurRecherche = new int[2][2];
 	
 	/**********************Constructeur************************/
 	private MoteurInference(){
@@ -33,19 +37,35 @@ public class MoteurInference {
 	
 	/************************Methodes**************************/
 	public int[] calculCoup(char[][] censureGrille){
+        int[] coupRetour = new int[2];
 		
-		...
+		consequence = elireRegle().getActions().toString();
 		
 		// Application de la regle
 		switch(consequence) {
 			case "mode(Recherche)":
 				// Appel fonction mode recherche
 				break;
+            case "mode(Destrution)":
+                // Appel fonction mode destruction
+                break;
+            case "changeDirection":
+                // changerDirection
+                break;
+            case "continuerDirection":
+                // continuerDirection
+                coupRetour[0] = avantDernierCoup[0]*(1+(dernierCoup[0]-1));
+                coupRetour[1] = avantDernierCoup[1]*(1+(dernierCoup[1]-1));
+                break;
+            case "changeSecteur":
+                // changer secteur
+                genererCoupRetourNouveauSecteur();
+                break;
 		}
-		
-		// Marquer la regle
-		
-		return new int[2];
+
+        avantDernierCoup = dernierCoup;
+        dernierCoup = coupRetour;
+		return coupRetour;
 	}
 	
 	
@@ -87,4 +107,35 @@ public class MoteurInference {
 		
 		return data;
 	}
+
+    private Regle elireRegle(){
+        ArrayList<Regle> tempListeRegles = new ArrayList<Regle>(listeRegles);
+
+        for(Regle r : tempListeRegles){
+            for(String s : faitsCourants){
+                if(!r.getPremisses().contains(s)){
+                    tempListeRegles.remove(r);//marquer la regle
+                }
+            }
+        }
+        if(tempListeRegles.size() == 1){
+            return tempListeRegles.get(0);
+        }
+        else
+        {
+            //A modifier si on a plusieurs regles avec les memes premisses
+            return null;
+        }
+    }
+
+    private int[] genererCoupRetourNouveauSecteur(){
+        int[] a = new int[2];
+        a[0] = 1;
+        a[1] = 5;
+        int[] b = new int[2];
+        b[0] = 6;
+        b[1] = 10;
+
+        if(dernierSecteurRecherche)
+    }
 }

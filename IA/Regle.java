@@ -33,19 +33,19 @@ public class Regle {
 	
 	/************************Methodes**************************/
 	/**
-	 * Permet de savoir si un fait correspond à un prémisse d’une règle
+	 * Permet de savoir si un fait correspond ï¿½ un prï¿½misse dï¿½une rï¿½gle
 	 * @param fait
-	 * @return booléen
+	 * @return boolï¿½en
 	 */
 	public boolean satisfaitCondition(String fait) {
 		return premisses.contains(fait);
 	}
 	
 	/**
-	 * Permet de savoir si un ensemble de faits satisfait tous les prémisses 
-	 * d’une règle
+	 * Permet de savoir si un ensemble de faits satisfait tous les prï¿½misses 
+	 * dï¿½une rï¿½gle
 	 * @param faits
-	 * @return booléen
+	 * @return boolï¿½en
 	 */
 	public boolean satisfaitConditions(String... faits) {
 		return Arrays.asList(faits).containsAll(premisses);
@@ -60,4 +60,7 @@ public class Regle {
 			regleString+=s;
 		return regleString;
 	}
+
+    public ArrayList getPremisses(){ return this.premisses;}
+    public ArrayList getActions(){ return this.actions;}
 }
