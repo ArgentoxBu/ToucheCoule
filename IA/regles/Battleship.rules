@@ -1,6 +1,5 @@
 premierCoup=>mode(Recherche)
 mode(Recherche),coupRate=>changeSecteur
 mode(Recherche),coupReussi=>mode(Destruction)
-mode(Destruction),coupRate,coupPossible=>changeDirection
-mode(Destruction),coupReussi,coupPossible=>continuerDirection
-mode(Destruction),coupReussi,!coupPossible=>mode(Recherche)
+mode(Destruction),coupPossible=>testerCoup
+mode(Destruction),!coupPossible=>mode(Recherche)

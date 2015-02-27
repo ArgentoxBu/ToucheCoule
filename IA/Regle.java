@@ -20,15 +20,14 @@ public class Regle {
 	
 	/************************Attributs*************************/
 	private ArrayList<String> premisses;
-	private ArrayList<String> actions;
+	private String actions;
 	
 	/**********************Constructeur************************/
 	public Regle(String data) {		
 		String[] regleDecomposee = data.split("=>");
 		premisses = new ArrayList<String>(Arrays.asList(
 				regleDecomposee[0].split(",")));
-		actions = new ArrayList<String>(Arrays.asList(
-				regleDecomposee[1].split(",")));
+		actions = (regleDecomposee[1]);
 	}
 	
 	/************************Methodes**************************/
@@ -56,11 +55,10 @@ public class Regle {
 		String regleString = "";
 		for(String s : premisses)
 			regleString+=s;
-		for(String s : actions)
-			regleString+=s;
+			regleString+=actions;
 		return regleString;
 	}
 
     public ArrayList getPremisses(){ return this.premisses;}
-    public ArrayList getActions(){ return this.actions;}
+    public String getActions(){ return this.actions;}
 }
