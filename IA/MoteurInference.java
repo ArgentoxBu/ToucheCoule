@@ -6,8 +6,8 @@ import java.util.*;
 public class MoteurInference {
 	//Main de test
 
-	public static void main(String[] args) {
-	}
+	//public static void main(String[] args) {
+	//}
 
 	/************************Attributs*************************/
 	private static MoteurInference instance;
@@ -35,18 +35,11 @@ public class MoteurInference {
 
 	/************************Methodes**************************/
 	public int[] calculCoup(char[][] censureGrille){
-
-
-		if(!faitsCourants.contains("premierCoup")){
-			if(faitsCourants.contains("mode(Destruction)")){
+		if(estSolution("premierCoup")){
+			if(!estSolution("mode(Destruction)")){
 				miseAJourDirPossibles(censureGrille);
 			}
 			miseAJourBaseFait(censureGrille);
-		}
-		int i =0;
-		for(String s : faitsCourants){
-			System.out.println("base de fait "+i+" : "+s);
-			i++;
 		}
 
 		int[] coupRetour = new int[2];
@@ -54,9 +47,6 @@ public class MoteurInference {
 
 		if(r!=null){
 			consequence = r.getActions().toString();
-
-
-			System.out.println("consequence : "+consequence);
 
 			// Application de la regle
 			switch(consequence) {
@@ -86,15 +76,17 @@ public class MoteurInference {
 
 			avantDernierCoup = dernierCoup.clone();
 			dernierCoup = coupRetour.clone();
-			System.out.println("coup : "+coupRetour[0] + " "+coupRetour[1]);
 		}
 
 		return coupRetour;
 	}
 
-
+	/**
+	 * Met à jour la base de faits connus
+	 * @param censureGrille
+	 */
 	private void miseAJourBaseFait(char[][] censureGrille) {
-		if(faitsCourants.contains("mode(Recherche)")){
+		if(!estSolution("mode(Recherche)")){
 			if(CoupReussi(dernierCoup, censureGrille)){
 				faitsCourants.add("coupReussi");
 				faitsCourants.remove("coupRate");
@@ -107,21 +99,25 @@ public class MoteurInference {
 				System.out.println("coup rate");
 			}
 		}
-		if(faitsCourants.contains("mode(Destruction)")){
+		if(!estSolution("mode(Destruction)")){
 			if(directionsPossibles.size() > 0 && 
-					!faitsCourants.contains("coupPossible")){
+					estSolution("coupPossible")){
 				faitsCourants.add("coupPossible");
 				faitsCourants.remove("!coupPossible");
 			}
 			if(directionsPossibles.size() == 0 &&
-					!faitsCourants.contains("!coupPossible")){
+					estSolution("!coupPossible")){
 				faitsCourants.remove("coupPossible");
 				faitsCourants.add("!coupPossible");
 			}
 		}
 	}
 
-
+	/**
+	 * Met à jour les directions possibles lorsqu'on a touché un bateau
+	 * pour continuer à le toucher
+	 * @param censureGrille
+	 */
 	private void miseAJourDirPossibles(char[][] censureGrille) {
 		directionsPossibles.remove(dernierCoup);
 		if(avantDernierCoup != null){
@@ -143,24 +139,55 @@ public class MoteurInference {
 			}
 		}
 		if(CoupReussi(dernierCoup, censureGrille)){
+			int[] nouveauCoup;
 			if(pointImpact[0] == dernierCoup[0]){
-				directionsPossibles.add(new int[]{dernierCoup[0],dernierCoup[1]
+				nouveauCoup = new int[]{dernierCoup[0],dernierCoup[1]
 						+((dernierCoup[1]-pointImpact[1])
-								/Math.abs(dernierCoup[1]-pointImpact[1]))});
+								/Math.abs(dernierCoup[1]-pointImpact[1]))};
 			}
 			else 
 			{
-				directionsPossibles.add(new int[]{dernierCoup[0]
+				nouveauCoup = new int[]{dernierCoup[0]
 						+((dernierCoup[0]-pointImpact[0])
 								/Math.abs(dernierCoup[0]-pointImpact[0]))
-								,dernierCoup[1]});
+								,dernierCoup[1]};
 			}
+
+			if(coupLegal(nouveauCoup, censureGrille))
+				directionsPossibles.add(nouveauCoup);
 		}		
 	}
 
+	/**
+	 * Est-ce que le coup est légal ?
+	 * @param nouveauCoup
+	 * @param censureGrille 
+	 * @return
+	 */
+	private boolean coupLegal(int[] nouveauCoup, char[][] censureGrille) {		
+		if(nouveauCoup[0] >= 10){
+			return false;
+		}
+		if(nouveauCoup[0] < 0){
+			return false;
+		}
+		if(nouveauCoup[1] >= 10){
+			return false;
+		}
+		if(nouveauCoup[1] < 0){
+			return false;
+		}
+		
+		if(censureGrille[nouveauCoup[0]][nouveauCoup[1]] != 'v')
+			return false;
 
+		return true;
+	}
 
-
+	/**
+	 * Singleton
+	 * @return
+	 */
 	public static MoteurInference getInstance(){
 		if(instance == null){
 			instance = new MoteurInference();
@@ -168,15 +195,31 @@ public class MoteurInference {
 		return instance;
 	}
 
+	/**
+	 * Vérifie si un fait est solution, c.-à-d. qu’il ne fait pas partie des 
+	 * faits connus
+	 * @param fait
+	 * @return
+	 */
 	private boolean estSolution(String fait){
 		return !faitsCourants.contains(fait);
 	}
 
+	/**
+	 * On vérifie que le coup a bien réussi
+	 * @param coup
+	 * @param censureGrille
+	 * @return
+	 */
 	private boolean CoupReussi(int[] coup, char[][] censureGrille){
 		assert censureGrille[coup[0]][coup[1]] != 'v' : "Erreur";
 		return censureGrille[coup[0]][coup[1]] != 'o'; 
 	}
 
+	/**
+	 * Parse le fichier
+	 * @return
+	 */
 	private ArrayList<String> deserialiserFichierRegle(){
 		ArrayList<String> data = new ArrayList<String>();
 		Scanner scanner;
@@ -192,7 +235,6 @@ public class MoteurInference {
 			scanner.close();
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			System.out.println("Fichier "+rulesFilePath+" non trouve : " 
 					+ e.getStackTrace()[0]);
 		}		
@@ -200,6 +242,10 @@ public class MoteurInference {
 		return data;
 	}
 
+	/**
+	 * Election de la règle à utiliser
+	 * @return
+	 */
 	private Regle elireRegle(){
 		ArrayList<Regle> tempListeRegles = new ArrayList<Regle>(listeRegles);
 
@@ -213,6 +259,11 @@ public class MoteurInference {
 		return null;
 	}
 
+	/**
+	 * Génération d'un coup aléatoire
+	 * @param censureGrille
+	 * @return
+	 */
 	private int[] genererCoupRetourModeRecherche(char[][] censureGrille){
 		int[] coord = new int[2];
 
@@ -248,6 +299,10 @@ public class MoteurInference {
 
 	}
 
+	/**
+	 * Une fois qu'on a touché un bateau, on tente les directions possibles
+	 * sur les cotés de la case touchée afin de le couler
+	 */
 	private void basculModeDestruction(){
 		directionsPossibles.clear();
 		int[] tempCoord = new int[2];
@@ -271,24 +326,28 @@ public class MoteurInference {
 			tempCoord[1] = dernierCoup[1]-1;
 			directionsPossibles.add(new int[]{tempCoord[0],tempCoord[1]});
 		}	
-		System.out.println("direction possible en pos0 "+directionsPossibles.get(0)[0]+" "+directionsPossibles.get(0)[1]);
 	}
 
+	/**
+	 * On choisit une des directions possibles et on la retire car utilisée
+	 * @return
+	 */
 	private int[] genererCoupRetourModeDestruction(){
 		int[] coupRetour = new int[2];
 		coupRetour[0] = directionsPossibles.get(0)[0];
 		coupRetour[1] = directionsPossibles.get(0)[1];
-		
-		int i =0;
-		for(int[] s : directionsPossibles){
-			System.out.println("dir possible "+i+" : "+s[0]+" "+s[1]);
-			i++;
-		}
+
 		directionsPossibles.remove(0);
-		
+
 		return coupRetour;
 	}
 
+	/**
+	 * Génération aléatoire d'un nombre
+	 * @param minNum
+	 * @param maxNum
+	 * @return
+	 */
 	private int getRandomNum(int minNum, int maxNum) {
 
 		int MonChiffre = maxNum + 1;
